@@ -1,9 +1,9 @@
 // Enter real contact details here before publishing. Leave unavailable fields blank.
 window.SALON_CONFIG = {
-  whatsapp: "",
+ whatsapp: "917373193373",
   instagram: "",
   email: "",
-  address: "",
+  address: "Jothi Magaleer Thaiyalagam Pandian Nagar, Madurai, Tamil Nadu 625006",
   hours: "",
 
   videos: {
