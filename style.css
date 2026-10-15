@@ -1978,3 +1978,342 @@
     width: 165px;
   }
 }
+/* PACKAGES */
+.packages-section {
+  scroll-margin-top: 110px;
+}
+
+.packages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.package-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid rgba(185, 137, 153, .3);
+  border-radius: 24px;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.package-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(90, 38, 62, .12);
+}
+
+.package-featured {
+  border: 2px solid #b98999;
+  background-image: linear-gradient(
+    145deg,
+    rgba(185, 137, 153, .16),
+    rgba(185, 137, 153, .03)
+  );
+}
+
+.package-label {
+  color: #b98999;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.package-card h3 {
+  margin: 18px 0 12px;
+  font-family: inherit;
+  font-size: clamp(24px, 2.3vw, 32px);
+  line-height: 1.2;
+}
+
+.package-card > p {
+  margin: 0;
+  line-height: 1.7;
+  opacity: .8;
+}
+
+.package-card ul {
+  flex: 1;
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.package-card li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(185, 137, 153, .22);
+  line-height: 1.5;
+}
+
+.package-card li::before {
+  content: "✧";
+  flex-shrink: 0;
+  color: #b98999;
+}
+
+.package-price {
+  display: block;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.package-card .button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .packages-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 26px;
+  }
+
+  .package-card {
+    padding: 26px 22px;
+    border-radius: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .package-card {
+    transition: none;
+  }
+
+  .package-card:hover {
+    transform: none;
+  }
+}
+/* CLICK TO FLIP PACKAGE CARDS */
+.package-card {
+  position: relative;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.package-card > .package-back {
+  display: none;
+}
+
+.package-card.is-flipped > :not(.package-back) {
+  visibility: hidden;
+}
+
+.package-card.is-flipped > .package-back {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 28px;
+  border-radius: inherit;
+  background: #27101f;
+  color: #fff;
+  text-align: center;
+  animation: package-turn .4s ease;
+}
+
+.package-back h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.package-back .package-amount {
+  margin: 0;
+  color: #e9bdcc;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+}
+
+.package-back .package-return {
+  padding: 10px 16px;
+  border: 1px solid #e9bdcc;
+  border-radius: 30px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.package-view-price {
+  margin-bottom: 16px;
+  padding: 10px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+@keyframes package-turn {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateY(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .package-card.is-flipped > .package-back {
+    animation: none;
+  }
+}
+.package-card:nth-child(1) .package-back {
+  background-image:
+    linear-gradient(rgba(39, 16, 31, .55), rgba(39, 16, 31, .75)),
+    url("assets/hair-spa.jpg");
+}
+
+.package-card:nth-child(2) .package-back {
+  background-image:
+    linear-gradient(rgba(39, 16, 31, .55), rgba(39, 16, 31, .75)),
+    url("assets/facial.jpg");
+}
+
+.package-card:nth-child(3) .package-back {
+  background-image:
+    linear-gradient(rgba(39, 16, 31, .55), rgba(39, 16, 31, .75)),
+    url("assets/bridal-makeup.jpg");
+}
+#packages .package-card.is-flipped > .package-back {
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Keep faces near the top visible */
+#packages .package-card:nth-child(1) .package-back {
+  background-position: center top;
+}
+
+#packages .package-card:nth-child(2) .package-back {
+  background-position: center top;
+}
+
+#packages .package-card:nth-child(3) .package-back {
+  background-position: center top;
+}
+/* SCROLL REVEAL */
+.scroll-reveal-item {
+  transition:
+    opacity .75s ease,
+    translate .75s cubic-bezier(.22, 1, .36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.scroll-reveal-item.reveal-pending {
+  opacity: 0;
+  translate: var(--reveal-x, -35px) 20px;
+}
+
+.scroll-reveal-item.reveal-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* PACKAGE CARD LIGHTING */
+#packages .package-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* Light follows the pointer */
+#packages .package-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 230px at var(--light-x, 50%) var(--light-y, 30%),
+    rgba(255, 220, 234, .25),
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+#packages .package-card:hover::after,
+#packages .package-card:focus-within::after {
+  opacity: 1;
+}
+
+/* Gentle glow around the card */
+#packages .package-card:hover,
+#packages .package-card:focus-within {
+  box-shadow:
+    0 16px 38px rgba(100, 45, 70, .16),
+    0 0 24px rgba(218, 161, 184, .2);
+}
+
+/* Soft lighting on the image side */
+#packages .package-back {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+#packages .package-back::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 225, 195, .18),
+    transparent 45%,
+    rgba(232, 167, 195, .12)
+  );
+}
+
+/* Smaller movement on mobile */
+@media (max-width: 600px) {
+  .scroll-reveal-item.reveal-pending {
+    translate: var(--reveal-x-mobile, -16px) 14px;
+  }
+
+  #packages .package-card::after {
+    opacity: .4;
+  }
+}
+
+/* Respect reduced motion settings */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal-item {
+    transition: none;
+    transition-delay: 0ms;
+  }
+
+  .scroll-reveal-item.reveal-pending {
+    opacity: 1;
+    translate: 0 0;
+  }
+}

@@ -390,3 +390,207 @@ const socials = document.querySelector('#social-links'); function addSocial(url,
     setupGallery();
   }
 })();
+// Replace null with each actual package amount.
+// Example: amount: 1500
+(() => {
+  const packages = [
+    { amount: null },
+    { amount: null },
+    { amount: null }
+  ];
+
+  document.querySelectorAll("#packages .package-card")
+    .forEach((card, index) => {
+      if (card.querySelector(".package-back")) return;
+
+      const title = card.querySelector("h3")?.textContent || "Package";
+      const amount = packages[index]?.amount;
+
+      const price = typeof amount === "number"
+        ? new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+          }).format(amount)
+        : "Contact for price";
+
+      // Remove price from the front.
+      card.querySelector(".package-price")?.remove();
+
+      const viewButton = document.createElement("button");
+      viewButton.type = "button";
+      viewButton.className = "package-view-price";
+      viewButton.textContent = "View Price ↗";
+      viewButton.setAttribute("aria-expanded", "false");
+
+      const enquiryButton = card.querySelector("[data-service]");
+      card.insertBefore(viewButton, enquiryButton);
+
+      const back = document.createElement("div");
+      back.className = "package-back";
+      back.hidden = true;
+
+      const heading = document.createElement("h3");
+      heading.textContent = title;
+
+      const priceText = document.createElement("p");
+      priceText.className = "package-amount";
+      priceText.textContent = price;
+
+      const returnButton = document.createElement("button");
+      returnButton.type = "button";
+      returnButton.className = "package-return";
+      returnButton.textContent = "← Back to package";
+
+      back.append(heading, priceText, returnButton);
+      card.append(back);
+
+      const frontElements = [...card.children]
+        .filter(element => element !== back);
+
+      function flip(showBack) {
+        card.classList.toggle("is-flipped", showBack);
+        back.hidden = !showBack;
+
+        frontElements.forEach(element => {
+          element.inert = showBack;
+        });
+
+        viewButton.setAttribute("aria-expanded", String(showBack));
+
+        if (showBack) {
+          returnButton.focus();
+        } else {
+          viewButton.focus();
+        }
+      }
+
+      card.addEventListener("click", event => {
+        if (event.target.closest(".package-back")) return;
+
+        // Keep the existing enquiry button working.
+        if (event.target.closest("a, button, input, select, textarea")
+            && !event.target.closest(".package-view-price")) return;
+
+        flip(true);
+      });
+
+      returnButton.addEventListener("click", () => flip(false));
+
+      card.addEventListener("keydown", event => {
+        if (event.key === "Escape" &&
+            card.classList.contains("is-flipped")) {
+          flip(false);
+        }
+      });
+    });
+})();
+/* PAGE REVEAL + PACKAGE LIGHTING */
+(() => {
+  function initPageEffects() {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const selector = [
+      "main .section-heading",
+      "main .editorial-heading",
+      "main .about-images",
+      "main .about-content",
+      "#services .service-card",
+      "#packages .package-card",
+      "main .editorial-item"
+    ].join(", ");
+
+    const items = [...document.querySelectorAll(selector)];
+
+    // Remove previous reveal classes from these elements.
+    items.forEach(item => {
+      item.classList.remove(
+        "reveal",
+        "scroll-reveal-item",
+        "reveal-pending",
+        "reveal-visible"
+      );
+    });
+
+    if (
+      !reducedMotion &&
+      "IntersectionObserver" in window &&
+      typeof Element.prototype.animate === "function"
+    ) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+
+          const item = entry.target;
+
+          const siblings = [...item.parentElement.children]
+            .filter(element => element.matches(selector));
+
+          const index = siblings.indexOf(item);
+          const distance = window.innerWidth <= 600 ? 16 : 40;
+          const direction = index % 2 === 0 ? -1 : 1;
+
+          item.animate(
+            [
+              {
+                opacity: 0,
+                translate: `${direction * distance}px 20px`
+              },
+              {
+                opacity: 1,
+                translate: "0px 0px"
+              }
+            ],
+            {
+              duration: 800,
+              delay: Math.min(index, 4) * 120,
+              easing: "cubic-bezier(.22, 1, .36, 1)",
+              fill: "backwards"
+            }
+          );
+
+          observer.unobserve(item);
+        });
+      }, {
+        threshold: 0.08
+      });
+
+      items.forEach(item => observer.observe(item));
+    }
+
+    // Package card lighting.
+    document.querySelectorAll("#packages .package-card")
+      .forEach(card => {
+        card.addEventListener("pointermove", event => {
+          if (event.pointerType === "touch") return;
+
+          const bounds = card.getBoundingClientRect();
+
+          card.style.setProperty(
+            "--light-x",
+            `${event.clientX - bounds.left}px`
+          );
+
+          card.style.setProperty(
+            "--light-y",
+            `${event.clientY - bounds.top}px`
+          );
+        });
+
+        card.addEventListener("pointerleave", () => {
+          card.style.removeProperty("--light-x");
+          card.style.removeProperty("--light-y");
+        });
+      });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPageEffects, {
+      once: true
+    });
+  } else {
+    initPageEffects();
+  }
+})();
