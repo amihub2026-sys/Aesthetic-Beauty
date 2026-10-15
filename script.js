@@ -73,77 +73,70 @@ fullImage.src = cardImage.currentSrc || cardImage.src;
     }
   });
 })();
-/* ONLINE IMAGES — ABOUT AND GALLERY */
 
-  /* ABOUT IMAGES */
-  const aboutMain = document.querySelector(".about-main-image");
-  const aboutDetail = document.querySelector(".about-detail-image");
 
-  if (aboutMain) {
-    aboutMain.src = onlineImages.salon;
-    aboutMain.alt = "Beauty salon interior inspiration";
-  }
+const details = document.querySelector('#contact-details');
 
-  if (aboutDetail) {
-    aboutDetail.src = onlineImages.beauty;
-    aboutDetail.alt = "South Indian bridal beauty inspiration";
-  }
+/* CLICK A VIDEO CARD TO PLAY IN FULLSCREEN */
+(() => {
+  const viewer = document.querySelector("#lightbox");
+  const placeholder = document.querySelector("#lightbox-photo");
+  const caption = document.querySelector("#lightbox-caption");
 
-  /* GALLERY IMAGES */
-  const galleryPhotos = [
-    {
-      src: onlineImages.bridal,
-      alt: "Traditional South Indian bridal look",
-      caption: "Traditional bridal elegance"
-    },
-    {
-      src: onlineImages.styling,
-      alt: "Bridal styling with jasmine flowers and jewellery",
-      caption: "Bridal styling inspiration"
-    },
-    {
-      src: onlineImages.nails,
-      alt: "Pastel manicure and an elegant hair bun",
-      caption: "Nail colour and styling details"
-    },
-    {
-      src: onlineImages.makeup,
-      alt: "South Indian bridal makeup and gold jewellery",
-      caption: "Beautiful makeup details"
-    },
-    {
-      src: onlineImages.traditional,
-      alt: "Traditional bridal styling with floral hair accessories",
-      caption: "Traditional beauty inspiration"
-    },
-    {
-      src: onlineImages.beauty,
-      alt: "South Indian bridal jewellery and makeup",
-      caption: "The finishing touches"
-    }
-  ];
+  if (!viewer || !placeholder) return;
 
-  document.querySelectorAll(".editorial-item").forEach((item, index) => {
-    const photo = galleryPhotos[index];
-    const image = item.querySelector("img");
+  let player;
 
-    if (!photo || !image) return;
+  document.querySelectorAll("[data-photo]").forEach((card) => {
+    card.addEventListener("click", () => {
+      // Use the same video shown inside the clicked card.
+      const preview = card.querySelector("video");
+      const source = preview?.querySelector("source");
 
-    image.src = photo.src;
-    image.alt = photo.alt;
-    image.loading = "lazy";
-    image.decoding = "async";
+      const path =
+        preview?.currentSrc ||
+        preview?.getAttribute("src") ||
+        source?.getAttribute("src") ||
+        window.SALON_CONFIG?.videos?.[card.dataset.photo];
 
-    /* Keep the full-size viewer connected to the online image */
-    item.dataset.galleryImage = photo.src;
-    item.dataset.caption = photo.caption;
+      if (!path) return;
+
+      if (player) {
+        player.pause();
+        player.remove();
+      }
+
+      placeholder.hidden = true;
+      placeholder.style.display = "none";
+
+      player = document.createElement("video");
+      player.src = path;
+      player.controls = true;
+      player.playsInline = true;
+      player.style.width = "100%";
+      player.style.maxHeight = "85vh";
+      player.style.objectFit = "contain";
+
+      placeholder.after(player);
+
+      if (caption) {
+        caption.textContent =
+          card.querySelector(".gallery-caption")?.textContent
+            .replace("↗", "")
+            .trim() || "";
+      }
+
+      viewer.showModal();
+      player.play().catch(() => {});
+
+     
+    });
   });
 
-
-
- photo = document.querySelector('#lightbox-photo'); let video;
-document.querySelectorAll('[data-photo]').forEach(b => b.addEventListener('click', () => { if (video) { video.remove(); video = null; } const path = config.videos?.[b.dataset.photo]; photo.hidden = !!path; photo.style.display = path ? 'none' : 'block'; if (path) { video = document.createElement('video'); video.controls = true; video.playsInline = true; video.src = path; video.style.width = '100%'; photo.after(video); } else photo.className = 'photo photo-' + b.dataset.photo; document.querySelector('#lightbox-caption').textContent = b.querySelector('.gallery-caption').textContent.replace('↗', '').trim(); lightbox.showModal(); })); lightbox.addEventListener('close', () => { if (video) video.pause(); });
-const details = document.querySelector('#contact-details');[config.address, config.hours].filter(Boolean).forEach(t => { const p = document.createElement('p'); p.textContent = t; details.append(p); });
+  viewer.addEventListener("close", () => {
+    if (player) player.pause();
+  });
+})();
 const socials = document.querySelector('#social-links'); function addSocial(url, label, svg) { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.setAttribute('aria-label', label); a.innerHTML = svg; socials.append(a); } if (/^\d{8,15}$/.test(config.whatsapp || '')) addSocial('https://wa.me/' + config.whatsapp, 'Chat on WhatsApp', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.5 14.6l-.4-.2-2.3.6.6-2.3-.3-.4A8 8 0 0 1 12 4zm-3 3c-.4 0-1.3.7-1.3 1.9 0 2.7 3.6 6.2 6.2 6.2 1.2 0 1.9-.9 1.9-1.3l-2-1.1-.9.9c-1.4-.5-2.5-1.6-3-3l.9-.9L9.7 7z"/></svg>'); if (/^https:\/\/(www\.)?instagram\.com\//i.test(config.instagram || '')) addSocial(config.instagram, 'Visit Instagram', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.5-3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/></svg>');
 /* CONTACT ENQUIRY FORM */
 (() => {
@@ -395,5 +388,209 @@ const socials = document.querySelector('#social-links'); function addSocial(url,
     document.addEventListener("DOMContentLoaded", setupGallery);
   } else {
     setupGallery();
+  }
+})();
+// Replace null with each actual package amount.
+// Example: amount: 1500
+(() => {
+  const packages = [
+    { amount: null },
+    { amount: null },
+    { amount: null }
+  ];
+
+  document.querySelectorAll("#packages .package-card")
+    .forEach((card, index) => {
+      if (card.querySelector(".package-back")) return;
+
+      const title = card.querySelector("h3")?.textContent || "Package";
+      const amount = packages[index]?.amount;
+
+      const price = typeof amount === "number"
+        ? new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0
+          }).format(amount)
+        : "Contact for price";
+
+      // Remove price from the front.
+      card.querySelector(".package-price")?.remove();
+
+      const viewButton = document.createElement("button");
+      viewButton.type = "button";
+      viewButton.className = "package-view-price";
+      viewButton.textContent = "View Price ↗";
+      viewButton.setAttribute("aria-expanded", "false");
+
+      const enquiryButton = card.querySelector("[data-service]");
+      card.insertBefore(viewButton, enquiryButton);
+
+      const back = document.createElement("div");
+      back.className = "package-back";
+      back.hidden = true;
+
+      const heading = document.createElement("h3");
+      heading.textContent = title;
+
+      const priceText = document.createElement("p");
+      priceText.className = "package-amount";
+      priceText.textContent = price;
+
+      const returnButton = document.createElement("button");
+      returnButton.type = "button";
+      returnButton.className = "package-return";
+      returnButton.textContent = "← Back to package";
+
+      back.append(heading, priceText, returnButton);
+      card.append(back);
+
+      const frontElements = [...card.children]
+        .filter(element => element !== back);
+
+      function flip(showBack) {
+        card.classList.toggle("is-flipped", showBack);
+        back.hidden = !showBack;
+
+        frontElements.forEach(element => {
+          element.inert = showBack;
+        });
+
+        viewButton.setAttribute("aria-expanded", String(showBack));
+
+        if (showBack) {
+          returnButton.focus();
+        } else {
+          viewButton.focus();
+        }
+      }
+
+      card.addEventListener("click", event => {
+        if (event.target.closest(".package-back")) return;
+
+        // Keep the existing enquiry button working.
+        if (event.target.closest("a, button, input, select, textarea")
+            && !event.target.closest(".package-view-price")) return;
+
+        flip(true);
+      });
+
+      returnButton.addEventListener("click", () => flip(false));
+
+      card.addEventListener("keydown", event => {
+        if (event.key === "Escape" &&
+            card.classList.contains("is-flipped")) {
+          flip(false);
+        }
+      });
+    });
+})();
+/* PAGE REVEAL + PACKAGE LIGHTING */
+(() => {
+  function initPageEffects() {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const selector = [
+      "main .section-heading",
+      "main .editorial-heading",
+      "main .about-images",
+      "main .about-content",
+      "#services .service-card",
+      "#packages .package-card",
+      "main .editorial-item"
+    ].join(", ");
+
+    const items = [...document.querySelectorAll(selector)];
+
+    // Remove previous reveal classes from these elements.
+    items.forEach(item => {
+      item.classList.remove(
+        "reveal",
+        "scroll-reveal-item",
+        "reveal-pending",
+        "reveal-visible"
+      );
+    });
+
+    if (
+      !reducedMotion &&
+      "IntersectionObserver" in window &&
+      typeof Element.prototype.animate === "function"
+    ) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+
+          const item = entry.target;
+
+          const siblings = [...item.parentElement.children]
+            .filter(element => element.matches(selector));
+
+          const index = siblings.indexOf(item);
+          const distance = window.innerWidth <= 600 ? 16 : 40;
+          const direction = index % 2 === 0 ? -1 : 1;
+
+          item.animate(
+            [
+              {
+                opacity: 0,
+                translate: `${direction * distance}px 20px`
+              },
+              {
+                opacity: 1,
+                translate: "0px 0px"
+              }
+            ],
+            {
+              duration: 800,
+              delay: Math.min(index, 4) * 120,
+              easing: "cubic-bezier(.22, 1, .36, 1)",
+              fill: "backwards"
+            }
+          );
+
+          observer.unobserve(item);
+        });
+      }, {
+        threshold: 0.08
+      });
+
+      items.forEach(item => observer.observe(item));
+    }
+
+    // Package card lighting.
+    document.querySelectorAll("#packages .package-card")
+      .forEach(card => {
+        card.addEventListener("pointermove", event => {
+          if (event.pointerType === "touch") return;
+
+          const bounds = card.getBoundingClientRect();
+
+          card.style.setProperty(
+            "--light-x",
+            `${event.clientX - bounds.left}px`
+          );
+
+          card.style.setProperty(
+            "--light-y",
+            `${event.clientY - bounds.top}px`
+          );
+        });
+
+        card.addEventListener("pointerleave", () => {
+          card.style.removeProperty("--light-x");
+          card.style.removeProperty("--light-y");
+        });
+      });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPageEffects, {
+      once: true
+    });
+  } else {
+    initPageEffects();
   }
 })();
